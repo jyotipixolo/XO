@@ -1,0 +1,36 @@
+/* Empty. Add your own CSS if you like */
+.inputbox{
+ width: 315px;
+    height: 95px;
+    text-align: -webkit-center;
+    /*margin-left: 3px;
+    margin-top: 12px;*/
+    display: -webkit-inline-flex;
+    transition: 1s linear;
+    /*-ms-transition: 1s linear;
+    -moz-transition: 1s linear;
+    -webkit-transition: 1s linear;*/
+    border-style: solid!important;
+    border-color: black !important;
+    border: 2px;
+text-align: center;
+}
+.inputs
+{
+ height: 45px;   
+  
+    text-align: center !important;
+    
+    
+}
+.layout{
+    margin-top: 40%;
+  /* display:-webkit-box;  */
+    
+}
+.text{
+      margin-top: 30%;
+    margin-left: 25%;  
+   font-size: 50px; 
+    
+}
