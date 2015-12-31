@@ -74,10 +74,45 @@ angular.module('starter.controllers', [])
         var click = 0;
         $scope.inputarray = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
         var turn = true;
+        var horizontalcheck = function (row) {
+            if ($scope.inputarray[row][0] == $scope.inputarray[row][1] && $scope.inputarray[row][0] == $scope.inputarray[row][2]) {
+                return true;
+            } else {
+                return false;
+            };
+        };
+
+        var verticalcheck = function (col) {
+            if ($scope.inputarray[0][col] == $scope.inputarray[1][col] && $scope.inputarray[0][col] == $scope.inputarray[2][col]) {
+                return true;
+
+            } else {
+
+                return false;
+            };
+
+        };
+
+        var diagonalcheck = function (diagonal) {
+            var val1, val2;
+            if (diagonal == 0) {
+                val1 = 1;
+                val2 = 1;
+            } else {
+                val1 = 1;
+                val2 = -1;
+            };
+            if ($scope.inputarray[1][1] == $scope.inputarray[1 + val1][1 + val2] && $scope.inputarray[1][1] == $scope.inputarray[1 - val1][1 - val2]) {
+                return true;
+            } else {
+                return false;
+            };
+        };
+
         var result = function (winner) {
             $ionicPopup.show({
 
-                template: '<center><h1>' + winner + ' is a winner </h1></center',
+                template: '<center><h1>' + winner + ' is the winner </h1></center',
 
                 buttons: [
 
@@ -89,7 +124,8 @@ angular.module('starter.controllers', [])
                             click = 0;
                             $scope.inputarray = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
                             turn = true;
-                            console.log("called");
+                            $scope.game = true;
+                            //  console.log("called");
 
                         }
       }
@@ -99,64 +135,101 @@ angular.module('starter.controllers', [])
 
 
         };
-        var playerresult = function () {
 
-            for (var i = 0; i < 3; i++) {
-                for (var j = 0; j < 3; j++) {
-                    if ($scope.inputarray[i][j] == $scope.inputarray[i][j + 1] && $scope.inputarray[i][j] == $scope.inputarray[i][j + 2] && j == 0) {
-                        result($scope.inputarray[i][j]);
-                        break;
-                    } else if ($scope.inputarray[i][j] == $scope.inputarray[i + 1][j] && $scope.inputarray[i][j] == $scope.inputarray[i + 2][j] && i == 0) {
-                        result($scope.inputarray[i][j]);
-                        break;
-                    } else if (i == j && i == 1) {
-                        if (($scope.inputarray[i][j] == $scope.inputarray[i + 1][j - 1] && $scope.inputarray[i][j] == $scope.inputarray[i - 1][j + 1]) || ($scope.inputarray[i][j] == $scope.inputarray[i + 1][j + 1] && $scope.inputarray[i][j] == $scope.inputarray[i - 1][j - 1]))
-                            result($scope.inputarray[i][j]);
-                        break;
-                    } else {
-                        if (click == 9) {
-                            result("No one");
+        $scope.game = true;
+        var playerwins = function (mark) {
+            $scope.game = false;
+            result(mark);
+            console.log("YOU WON");
+        };
+        var playerresult = function (mark) {
+            var returnval;
+            if (click > 4) {
+                for (var i = 0; i < 3; i++) {
+                    if ($scope.inputarray[i][i] != 0) {
+                        console.log("horizontal " + i + " checking");
+                        returnval = horizontalcheck(i);
+                        if (returnval != true) {
+                            console.log("vertical " + i + " cchecking");
+                            returnval = verticalcheck(i);
+                            if (returnval != true) {
+                                if (i < 2) {
+                                    console.log("diagonal " + i + " checking");
+                                    returnval = diagonalcheck(i);
+                                    if (returnval != true) {
+                                        //break;
+                                    } else {
+                                        playerwins(mark);
+                                        break;
+                                    };
+                                } else {
+                                    //break;
+                                };
+                            } else {
+                                playerwins(mark);
+                                break;
+                            };
+                        } else {
+                            playerwins(mark);
                             break;
-                        }
-                    }
-                }
+                        };
+                    };
+
+                };
+                if (click == 9) {
+                    if($scope.game == true)
+                    {
+                        $scope.game = false;
+                        result('No one');
+                    };
+                };
+                console.log(returnval);
             };
 
         };
-    var computerplay=function()
-    {
-        console.log($scope.inputarray);
-       var row=Math.floor(Math.random()*3) ;
-       var col=Math.floor(Math.random()*3) ;
-        console.log(row);
-        console.log(col);
-        if($scope.inputarray[row][col]==0)
-        {
-          $scope.inputarray[row][col]='X';  
-            click++;
-            
+        var computerplay = function () {
+            //
+            // console.log($scope.inputarray);
+            var row = Math.floor(Math.random() * 3);
+            var col = Math.floor(Math.random() * 3);
+            /*console.log(row);
+            console.log(col);*/
+            if ($scope.inputarray[row][col] == 0) {
+                $scope.inputarray[row][col] = 'X';
+                click++;
+                playerresult("X");
+
+            } else {
+
+                computerplay();
+
+            }
         }
-        else{
-            
-        computerplay();
-        
-        }
-    }
         $scope.playerclick = function (pindex, cindex) {
-            if ($scope.inputarray[pindex][cindex] == 0) {
-                if (turn == true) {
-                    $scope.inputarray[pindex][cindex] = 'O';
-                    console.log($scope.inputarray);
-                    click++;
-                    if (click < 9)
-                    computerplay();
-                } 
 
-                
-                console.log(turn);
 
+            if ($scope.game == true) {
+
+                if ($scope.inputarray[pindex][cindex] == 0) {
+                    if (turn == true) {
+                        $scope.inputarray[pindex][cindex] = 'O';
+                        click++;
+                        playerresult("O");
+                        //  console.log($scope.inputarray);
+                        if (click < 9) {
+                            if ($scope.game == true) {
+                                computerplay();
+                            }
+                        };
+
+                    }
+
+
+                    //console.log(turn);
+
+                };
             };
-           // playerresult();
+
 
         };
 
