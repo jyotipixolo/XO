@@ -1,0 +1,68 @@
+<ion-view view-title="Play" hide-nav-bar="true">
+    <ion-content class="bluebg">
+        <div class="row">
+            <div class="col col-20 textcenter"><img src="img/back_arrow.png" width="100%"></div>
+            <div class="col col-40"></div>
+            <div class="col col-40"><a class="button button-outline icon-left ion-navicon button-light levelbtn">Level</a></div>
+        </div>
+        <div class="row">
+            <div class="col col-10"></div>
+            <div class="col gamearea">
+                <div class="row gamerow">
+                    <div class="col" ng-click="playerclick(0,0)">
+                        <img src="img/x.png" ng-if="inputarray[0][0]=='X'">
+                        <img src="img/o.png" ng-if="inputarray[0][0]=='O'">
+                    </div>
+                    <div class="col" ng-click="playerclick(0,1)">
+                        <img src="img/x.png" ng-if="inputarray[0][1]=='X'">
+                        <img src="img/o.png" ng-if="inputarray[0][1]=='O'">
+                    </div>
+                    <div class="col" ng-click="playerclick(0,2)">
+                        <img src="img/x.png" ng-if="inputarray[0][2]=='X'">
+                        <img src="img/o.png" ng-if="inputarray[0][2]=='O'">
+                    </div>
+                </div>
+                <div class="row gamerow">
+                    <div class="col" ng-click="playerclick(1,0)">
+                        <img src="img/x.png" ng-if="inputarray[1][0]=='X'">
+                        <img src="img/o.png" ng-if="inputarray[1][0]=='O'">
+                    </div>
+                    <div class="col" ng-click="playerclick(1,1)">
+                        <img src="img/x.png" ng-if="inputarray[1][1]=='X'">
+                        <img src="img/o.png" ng-if="inputarray[1][1]=='O'">
+                    </div>
+                    <div class="col" ng-click="playerclick(1,2)">
+                        <img src="img/x.png" ng-if="inputarray[1][2]=='X'">
+                        <img src="img/o.png" ng-if="inputarray[1][2]=='O'">
+                    </div>
+                </div>
+                <div class="row gamerow">
+                    <div class="col" ng-click="playerclick(2,0)">
+                        <img src="img/x.png" ng-if="inputarray[2][0]=='X'">
+                        <img src="img/o.png" ng-if="inputarray[2][0]=='O'">
+                    </div>
+                    <div class="col" ng-click="playerclick(2,1)">
+                        <img src="img/x.png" ng-if="inputarray[2][1]=='X'">
+                        <img src="img/o.png" ng-if="inputarray[2][1]=='O'">
+                    </div>
+                    <div class="col" ng-click="playerclick(2,2)">
+                        <img src="img/x.png" ng-if="inputarray[2][2]=='X'">
+                        <img src="img/o.png" ng-if="inputarray[2][2]=='O'">
+                    </div>
+                </div>
+            </div>
+            <div class="col col-10"></div>
+        </div>
+        <!--<div class="">
+            <div class="inputbox" ng-repeat="inputs in inputarray track by $index">
+                <div ng-repeat="input in inputs track by $index" class="inputbox" ng-click="playerclick($parent.$index,$index)" ng-disabled="game">
+                    <div ng-show="input=='X'|| input=='O'" class="inputs">
+                        <h1 class="text">{{input}}</h1></div>
+                </div>
+                <br>
+            </div>
+
+            <br ng-if="$index== 2 && $index==5">
+        </div>-->
+    </ion-content>
+</ion-view>
