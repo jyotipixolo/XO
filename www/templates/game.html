@@ -9,45 +9,21 @@
             <div class="col col-10"></div>
             <div class="col gamearea">
                 <div class="row gamerow">
-                    <div class="col" ng-click="playerclick(0,0)">
-                        <img src="img/x.png" ng-if="inputarray[0][0]=='X'">
-                        <img src="img/o.png" ng-if="inputarray[0][0]=='O'">
-                    </div>
-                    <div class="col" ng-click="playerclick(0,1)">
-                        <img src="img/x.png" ng-if="inputarray[0][1]=='X'">
-                        <img src="img/o.png" ng-if="inputarray[0][1]=='O'">
-                    </div>
-                    <div class="col" ng-click="playerclick(0,2)">
-                        <img src="img/x.png" ng-if="inputarray[0][2]=='X'">
-                        <img src="img/o.png" ng-if="inputarray[0][2]=='O'">
+                    <div class="col" ng-click="playerclick(0,$index)" ng-repeat="input in inputarray[0] track by $index">
+                        <img src="img/x.png" ng-if="input=='X'">
+                        <img src="img/o.png" ng-if="input=='O'">
                     </div>
                 </div>
                 <div class="row gamerow">
-                    <div class="col" ng-click="playerclick(1,0)">
-                        <img src="img/x.png" ng-if="inputarray[1][0]=='X'">
-                        <img src="img/o.png" ng-if="inputarray[1][0]=='O'">
-                    </div>
-                    <div class="col" ng-click="playerclick(1,1)">
-                        <img src="img/x.png" ng-if="inputarray[1][1]=='X'">
-                        <img src="img/o.png" ng-if="inputarray[1][1]=='O'">
-                    </div>
-                    <div class="col" ng-click="playerclick(1,2)">
-                        <img src="img/x.png" ng-if="inputarray[1][2]=='X'">
-                        <img src="img/o.png" ng-if="inputarray[1][2]=='O'">
+                    <div class="col" ng-click="playerclick(1,$index)" ng-repeat="input in inputarray[1] track by $index">
+                        <img src="img/x.png" ng-if="input=='X'">
+                        <img src="img/o.png" ng-if="input=='O'">
                     </div>
                 </div>
                 <div class="row gamerow">
-                    <div class="col" ng-click="playerclick(2,0)">
-                        <img src="img/x.png" ng-if="inputarray[2][0]=='X'">
-                        <img src="img/o.png" ng-if="inputarray[2][0]=='O'">
-                    </div>
-                    <div class="col" ng-click="playerclick(2,1)">
-                        <img src="img/x.png" ng-if="inputarray[2][1]=='X'">
-                        <img src="img/o.png" ng-if="inputarray[2][1]=='O'">
-                    </div>
-                    <div class="col" ng-click="playerclick(2,2)">
-                        <img src="img/x.png" ng-if="inputarray[2][2]=='X'">
-                        <img src="img/o.png" ng-if="inputarray[2][2]=='O'">
+                    <div class="col" ng-click="playerclick(2,$index)" ng-repeat="input in inputarray[2] track by $index">
+                        <img src="img/x.png" ng-if="input=='X'">
+                        <img src="img/o.png" ng-if="input=='O'">
                     </div>
                 </div>
             </div>
