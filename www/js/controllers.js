@@ -42,9 +42,9 @@ angular.module('starter.controllers', [])
 })
 
 .controller('selectCtrl', function ($scope) {
-    
-    
-    
+
+
+
 })
 
 
@@ -52,7 +52,7 @@ angular.module('starter.controllers', [])
 
 
 .controller('gameCtrl', function ($scope, $stateParams, $ionicPopup) {
-        var computerstart = false;
+        var computerstart = true;
         var turn;
         var level;
         var click;
@@ -241,10 +241,54 @@ angular.module('starter.controllers', [])
             return [-1, -1];
 
         };
-        var computermark = function (row, col) {
-            if ($scope.inputarray[row][col] == 0) {
+        var checkforwinintwosteps = function (mark) {
+            var loopbreak = false;
+            var twostepwinarray = [];
+            for (var i = 0; i < 3; i++) {
+                for (var j = 0; j < 3; j++) {
+
+                    if ($scope.inputarray[i][j] == 0) {
+
+                        $scope.inputarray[i][j] = mark;
+                        twostepwinarray = checkloseinonestep(mark);
+                        if (twostepwinarray[1] > 0) {
+                            $scope.inputarray[i][j] = 0;
+                            // computermark(i, j);
+                            loopbreak = true;
+                            return [i, j];
+                            //break;
+                        } else {
+                            $scope.inputarray[i][j] = 0;
+                        };
+                        console.log('returned');
+                    }
+                    if (loopbreak) {
+                        break;
+                    }
+
+                };
+                if (loopbreak) {
+                    break;
+                }
+
+
+
+            };
+
+            return [-1, -1];
+
+
+
+
+
+
+
+
+        };
+        var computermark = function (position) {
+            if ($scope.inputarray[position[0]][position[1]] == 0) {
                 console.log('im in');
-                $scope.inputarray[row][col] = 'X';
+                $scope.inputarray[position[0]][position[1]] = 'X';
                 click++;
                 if (click > 4) {
                     playerresult() ? playerwins('X') : null;
@@ -253,13 +297,92 @@ angular.module('starter.controllers', [])
 
             } else {
 
-                computerplay();
+                //computerplay(level, 'O');
 
             }
 
 
-        }
-        var computerplay = function (level) {
+        };
+        var checkbest = function (marksarray) {
+            var bestpositions = [];
+            var bestmark = 0;
+            for (var i = 0; i < 3; i++) {
+                for (var j = 0; j < 3; j++) {
+                    if (marksarray[i][j] > bestmark) {
+                        bestpositions = [];
+                        bestpositions.push([i, j]);
+                        bestmark = marksarray[i][j];
+                    } else {
+                        if (marksarray[i][j] == bestmark) {
+                            bestpositions.push([i, j]);
+                        }
+                    };
+                };
+            };
+            console.log(bestpositions);
+            var bestrandom = Math.floor((Math.random() * bestpositions.length) + 1);
+            return bestpositions[bestrandom];
+        };
+
+        var bestposition = function (level, mark) {
+            console.log("looking for best");
+            var dummyarray = [];
+            dummyarray = $scope.inputarray.slice();
+            console.log(dummyarray);
+            var markposition = [];
+            var currmark;
+            var chance = 0;
+            var result = false;
+            var marksarray = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+            for (var i = 0; i < 3; i++) {
+                for (var j = 0; j < 3; j++) {
+                    var chance = 0;
+                    $scope.inputarray = dummyarray;
+                    result = false;
+                    if ($scope.inputarray[i][j] != 0) {
+                        $scope.inputarray[i][j] = mark;
+
+                        while ($scope.inputarray[0].indexOf(0) >= 0 || $scope.inputarray[1].indexOf(0) >= 0 || $scope.inputarray[2].indexOf(0) >= 0) {
+                            if (chance % 2 == 0) {
+                                coin = mark;
+                                opmark = (mark == "X" ? "O" : "X");
+                            } else {
+                                coin = (mark == "X" ? "O" : "X");
+                                opmark = mark;
+                            };
+                            chance++;
+
+
+                            markposition = computerplay("difficult", opmark)
+                            $scope.inputarray[markposition[0]][markposition[1]] = opmark;
+                            if (playerresult()) {
+                                result = true;
+                                if (opmark != mark) {
+                                    console.log("-10 de");
+                                    marksarray[markposition[0]][markposition[1]] -= 10;
+                                    break;
+                                } else {
+                                    console.log("+10 de");
+                                    marksarray[markposition[0]][markposition[1]] += 10;
+                                    break;
+                                };
+                            };
+                        };
+                        if (result) {
+                            console.log("+1 de");
+                            marksarray[markposition[0]][markposition[1]] += 1;
+                        };
+                        //break will come here
+                    };
+                };
+            };
+            var bespost =  checkbest(marksarray);
+            return bespost;
+
+
+
+        };
+        var computerplay = function (level, value) {
             var row;
             var col;
             var positionarray = [];
@@ -278,23 +401,28 @@ angular.module('starter.controllers', [])
 
                 } else {
 
-                    positionarray = checkloseinonestep("X"); //CHECK FOR WIN
+                    positionarray = checkloseinonestep(value); //CHECK FOR WIN
                     if (positionarray[0] < 0) {
 
-                        positionarray = checkloseinonestep("O"); //CHECK FOR LOOSE
+                        positionarray = checkloseinonestep(value == "X" ? "O" : "X"); //CHECK FOR LOOSE
                         if (positionarray[0] < 0) {
-
                             console.log("logic");
+                            positionarray = bestposition(level, value);
 
-                        }
-                    }
-                }
-                row = positionarray[0];
-                col = positionarray[1];
-            }
+
+
+
+
+                        };
+                    };
+                };
+            };
+            row = positionarray[0];
+            col = positionarray[1];
+
             /*console.log(row);
             console.log(col);*/
-            computermark(row, col);
+            return positionarray;
 
 
 
@@ -306,24 +434,21 @@ angular.module('starter.controllers', [])
 
                 if ($scope.inputarray[pindex][cindex] == 0) {
                     if (turn == true) {
+                        console.log("put OOOOOOOOOOOOOOOOOOOOO");
                         $scope.inputarray[pindex][cindex] = 'O';
                         click++;
                         if (click > 4) {
                             playerresult() ? playerwins("O") : null;
-
-
-
-
-                        }
+                        };
                         //  console.log($scope.inputarray);
                         if (click < 9) {
                             if ($scope.game == true) {
-                                computerplay(level);
+                                computermark(computerplay(level, "X"));
 
-                            }
+                            };
                         };
 
-                    }
+                    };
 
 
                     //console.log(turn);
