@@ -51,7 +51,7 @@ angular.module('starter.controllers', [])
 
 
 
-.controller('gameCtrl', function ($scope, $stateParams, $ionicPopup) {
+.controller('gameCtrl', function ($scope, $stateParams, $ionicPopup, $interval) {
         var computerstart = true;
         var turn;
         var level;
@@ -91,16 +91,16 @@ angular.module('starter.controllers', [])
 
         };
 
-        var horizontalcheck = function (row) {
-            if ($scope.inputarray[row][0] == $scope.inputarray[row][1] && $scope.inputarray[row][0] == $scope.inputarray[row][2]) {
+        var horizontalcheck = function (row, array) {
+            if (array[row][0] == array[row][1] && array[row][0] == array[row][2]) {
                 return true;
             } else {
                 return false;
             };
         };
 
-        var verticalcheck = function (col) {
-            if ($scope.inputarray[0][col] == $scope.inputarray[1][col] && $scope.inputarray[0][col] == $scope.inputarray[2][col]) {
+        var verticalcheck = function (col, array) {
+            if (array[0][col] == array[1][col] && array[0][col] == array[2][col]) {
                 return true;
 
             } else {
@@ -110,7 +110,7 @@ angular.module('starter.controllers', [])
 
         };
 
-        var diagonalcheck = function (diagonal) {
+        var diagonalcheck = function (diagonal, array) {
             var val1, val2;
             if (diagonal == 0) {
                 val1 = 1;
@@ -119,7 +119,7 @@ angular.module('starter.controllers', [])
                 val1 = 1;
                 val2 = -1;
             };
-            if ($scope.inputarray[1][1] == $scope.inputarray[1 + val1][1 + val2] && $scope.inputarray[1][1] == $scope.inputarray[1 - val1][1 - val2]) {
+            if (array[1][1] == array[1 + val1][1 + val2] && array[1][1] == array[1 - val1][1 - val2]) {
                 return true;
             } else {
                 return false;
@@ -162,20 +162,20 @@ angular.module('starter.controllers', [])
             result(mark);
             ////.log("YOU WON");
         };
-        var playerresult = function () {
+        var playerresult = function (array) {
             var returnval;
 
             for (var i = 0; i < 3; i++) {
-                if ($scope.inputarray[i][i] != 0) {
+                if (array[i][i] != 0) {
                     //console.log("horizontal " + i + " checking");
-                    returnval = horizontalcheck(i);
+                    returnval = horizontalcheck(i, array);
                     if (returnval != true) {
                         // console.log("vertical " + i + " cchecking");
-                        returnval = verticalcheck(i);
+                        returnval = verticalcheck(i, array);
                         if (returnval != true) {
                             if (i < 2) {
                                 // console.log("diagonal " + i + " checking");
-                                returnval = diagonalcheck(i);
+                                returnval = diagonalcheck(i, array);
                                 if (returnval != true) {
                                     //break;
                                 } else {
@@ -214,7 +214,7 @@ angular.module('starter.controllers', [])
                     if ($scope.inputarray[i][j] == 0) {
 
                         $scope.inputarray[i][j] = mark;
-                        if (playerresult()) {
+                        if (playerresult($scope.inputarray)) {
                             $scope.inputarray[i][j] = 0;
                             // computermark(i, j);
                             loopbreak = true;
@@ -291,7 +291,7 @@ angular.module('starter.controllers', [])
                 $scope.inputarray[position[0]][position[1]] = 'X';
                 click++;
                 if (click > 4) {
-                    playerresult() ? playerwins('X') : null;
+                    playerresult($scope.inputarray) ? playerwins('X') : null;
                     //playerwins("X");
                 }
 
@@ -304,6 +304,7 @@ angular.module('starter.controllers', [])
 
         };
         var checkbest = function (marksarray) {
+            console.log("looking for best");
             var bestpositions = [];
             var bestmark = 0;
             for (var i = 0; i < 3; i++) {
@@ -320,29 +321,76 @@ angular.module('starter.controllers', [])
                 };
             };
             console.log(bestpositions);
-            var bestrandom = Math.floor((Math.random() * bestpositions.length) + 1);
+            var bestrandom;
+            console.log(bestpositions.length);
+            if (bestpositions.length > 1) {
+                bestrandom = (Math.floor((Math.random() * bestpositions.length) + 1)) - 1;
+            } else {
+                bestrandom = 0;
+            };
+            console.log(bestrandom);
+            console.log(bestpositions[bestrandom]);
             return bestpositions[bestrandom];
         };
 
-        var bestposition = function (level, mark) {
-            console.log("looking for best");
-            var dummyarray = [];
-            dummyarray = $scope.inputarray.slice();
+        var bestposition = function (level, mark, arr, bestposthread) {
+            var dummyarray = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+            if (bestposthread) {
+                for (var q = 0; q < 3; q++) {
+                    for (var w = 0; w < 3; w++) {
+                        if (arr != 0) {
+                            dummyarray[q][w] = arr[q][w];
+                        };
+                    };
+                };
+            } else {
+                for (var q = 0; q < 3; q++) {
+                    for (var w = 0; w < 3; w++) {
+                        if ($scope.inputarray[q][w] != 0) {
+                            dummyarray[q][w] = $scope.inputarray[q][w];
+                        };
+                    };
+                };
+            };
+
             console.log(dummyarray);
+            var dummy = [];
             var markposition = [];
             var currmark;
             var chance = 0;
+            var iterate = 0;
             var result = false;
             var marksarray = [[0, 0, 0], [0, 0, 0], [0, 0, 0]];
+
+
             for (var i = 0; i < 3; i++) {
                 for (var j = 0; j < 3; j++) {
-                    var chance = 0;
-                    $scope.inputarray = dummyarray;
+                    //checking should happen on copy array
+                    if (bestposthread) {
+                        for (var e = 0; e < 3; e++) {
+                            for (var r = 0; r < 3; r++) {
+                                if (arr[e][r] == 0) {
+                                    dummyarray[e][r] = 0;
+                                };
+                            };
+                        };
+                    } else {
+                        for (var e = 0; e < 3; e++) {
+                            for (var r = 0; r < 3; r++) {
+                                if ($scope.inputarray[e][r] == 0) {
+                                    dummyarray[e][r] = 0;
+                                };
+                            };
+                        };
+                    };
+                    //reset vars
                     result = false;
-                    if ($scope.inputarray[i][j] != 0) {
-                        $scope.inputarray[i][j] = mark;
+                    chance = 0 + iterate;
 
-                        while ($scope.inputarray[0].indexOf(0) >= 0 || $scope.inputarray[1].indexOf(0) >= 0 || $scope.inputarray[2].indexOf(0) >= 0) {
+                    if (dummyarray[i][j] == 0) {
+                        dummyarray[i][j] = mark;
+
+                        while (dummyarray[0].indexOf(0) >= 0 || dummyarray[1].indexOf(0) >= 0 || dummyarray[2].indexOf(0) >= 0) {
                             if (chance % 2 == 0) {
                                 coin = mark;
                                 opmark = (mark == "X" ? "O" : "X");
@@ -352,37 +400,42 @@ angular.module('starter.controllers', [])
                             };
                             chance++;
 
-
-                            markposition = computerplay("difficult", opmark)
-                            $scope.inputarray[markposition[0]][markposition[1]] = opmark;
-                            if (playerresult()) {
+                            console.log("calling play mode");
+                            markposition = computerplay("difficult", opmark, dummyarray);
+                            console.log(markposition);
+                            dummyarray[markposition[0]][markposition[1]] = opmark;
+                            if (playerresult(dummyarray)) {
                                 result = true;
                                 if (opmark != mark) {
                                     console.log("-10 de");
-                                    marksarray[markposition[0]][markposition[1]] -= 10;
+                                    marksarray[i][j] -= 10;
                                     break;
                                 } else {
                                     console.log("+10 de");
-                                    marksarray[markposition[0]][markposition[1]] += 10;
+                                    marksarray[i][j] += 10;
                                     break;
                                 };
                             };
                         };
-                        if (result) {
+                        if (!result) {
                             console.log("+1 de");
-                            marksarray[markposition[0]][markposition[1]] += 1;
+                            marksarray[i][j] += 5;
                         };
                         //break will come here
                     };
+                    chance = 0;
+                    iterate++;
                 };
             };
-            var bespost =  checkbest(marksarray);
+            console.log(marksarray);
+            var bespost = checkbest(marksarray);
+            console.log(bespost);
             return bespost;
 
 
 
         };
-        var computerplay = function (level, value) {
+        var computerplay = function (level, value, arr) {
             var row;
             var col;
             var positionarray = [];
@@ -407,12 +460,7 @@ angular.module('starter.controllers', [])
                         positionarray = checkloseinonestep(value == "X" ? "O" : "X"); //CHECK FOR LOOSE
                         if (positionarray[0] < 0) {
                             console.log("logic");
-                            positionarray = bestposition(level, value);
-
-
-
-
-
+                            positionarray = bestposition(level, value, arr, true);
                         };
                     };
                 };
@@ -434,16 +482,19 @@ angular.module('starter.controllers', [])
 
                 if ($scope.inputarray[pindex][cindex] == 0) {
                     if (turn == true) {
-                        console.log("put OOOOOOOOOOOOOOOOOOOOO");
+                        console.log("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
                         $scope.inputarray[pindex][cindex] = 'O';
                         click++;
                         if (click > 4) {
-                            playerresult() ? playerwins("O") : null;
+                            playerresult($scope.inputarray) ? playerwins("O") : null;
                         };
                         //  console.log($scope.inputarray);
                         if (click < 9) {
                             if ($scope.game == true) {
-                                computermark(computerplay(level, "X"));
+                                var pos = computerplay(level, "X", $scope.inputarray);
+                                if (pos[0] > -1) {
+                                    $interval(computermark(pos), 1000, 1);
+                                };
 
                             };
                         };
